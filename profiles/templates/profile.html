@@ -1,0 +1,872 @@
+{%extends "C:\Users\Rohith Endoori\majorprojectvenv\mjpro\main\templates\home.html" %}
+{%block contentstyle%}
+
+.left-nav {
+    position: fixed;
+    top: 10%;
+    left: 60px;
+    width: 20%;
+    height: calc(100% - 60px);
+    background-color: #f1f1f1;
+    border-right: 1px solid #ccc;
+    padding-top: 20px;
+    z-index: 1;
+}
+.left-nav a {
+    margin-left:6%;
+    margin-bottom:6%;
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: black;
+    font-size: 20px;
+}
+.left-nav a:hover {
+    background-color: #ddd;
+}
+.main-content {
+    margin-left: 25%;
+    padding: 20px;
+    background-color: #4d7b7b;
+    height: calc(100vh - 60px);
+    width: calc(100% - 28%);
+    overflow-y: auto;
+}
+.main-content h2 {
+    color: white;
+    margin-top: 0;
+}
+.main-content ul {
+    list-style-type: none;
+    padding: 0;
+}
+.main-content ul li {
+    background-color: #fff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-top: 6%; /* Increased margin-top */
+}
+.profile-header img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+    cursor:pointer;
+}
+.profile-header .profile-info {
+    color: white;
+}
+.profile-header .profile-info h3 {
+    margin: 0;
+}
+.profile-header .profile-info p {
+    margin: 5px 0;
+}
+.profile-header .edit-button {
+    margin-left: auto;
+    background-color: #fff;
+    color: #4d7b7b;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+}
+.modal-content img {
+    width: 100%;
+    border-radius: 10px;
+}
+.modal-content button{
+    width: 40%;
+    margin-top: 2%;
+    padding: 15px;
+    background-color: #28a740;
+    color: white;
+    border: none;
+    border-radius: 4%;
+    cursor: pointer;
+
+}
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+/* Edit form modal styles */
+        .edit-modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+        .edit-modal-content h2 {
+            text-align: center;
+        }
+        .edit-modal-content form {
+            display: flex;
+            flex-direction: column;
+        }
+        .edit-modal-content form label {
+            margin: 10px 0 5px;
+        }
+        .edit-modal-content form input,
+        .edit-modal-content form textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .edit-modal-content form button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4d7b7b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .edit-modal-content form button:hover {
+            background-color: #3a5a5a;
+        }
+
+
+        .hidden{
+            display:none;
+        }
+{%endblock contentstyle%}
+{%block content%}
+<div class="left-nav">
+    <a href="#basic">
+     Basic
+    </a>
+    <a href="#education">
+     Education
+    </a>
+    <a href="#interests">
+     Interests
+    </a>
+    <a href="#hobbies">
+     Hobbies
+    </a>
+    <a href="#skills">
+     Skills
+    </a>
+    <a href="#work-experience">
+     Work Experience
+    </a>
+    <a href="#achievements">
+     Achievements
+    </a>
+    <a href="#contact-info">
+     Contact Info
+    </a>
+</div>
+<div class="main-content">
+    <div class="profile-header">
+        {%if profilepic %}
+        <img alt="Profile Picture" id="profilePic" src="{{profilepic.url|default:'https://placehold.co/100x100'}}" onerror="this.onerror=null; this.src='https://placehold.co/100x100';">
+        {%else%}
+        <img alt="Profile Picture" id="profilePic" src="https://placehold.co/100x100" />
+        {%endif%}
+     <div class="profile-info">
+      <h3>
+       {{firstname}} {{middlename}} {{lastname}}
+      </h3>
+      <p>
+       Username : {{username}}
+      </p>
+      <p>
+       Email : {{email}}
+      </p>
+     </div>
+     <button class="edit-button" id="editButton">
+      Edit
+     </button>
+    </div>
+    <h2 id="basic">
+     Basic
+    </h2>
+    <ul>
+     <li>
+      First Name: {{firstname}}
+     </li>
+     <li>
+        Middle Name: {{middlename}}
+     </li>
+     <li>
+        Last Name: {{lastname}}
+     </li>
+     <li>
+      Date Of Birth: {{dob}}
+     </li>
+     <li>
+      Location: New York, USA
+     </li>
+    </ul>
+    <h2 id="education">
+     Education
+    </h2>
+    <ul>
+     <li>
+      Bachelor of Science in Computer Science
+     </li>
+     <li>
+      Master of Science in Data Science
+     </li>
+    </ul>
+    <h2 id="interests">
+     Interests
+    </h2>
+    <ul>
+        {% for x in interests%}
+        <li>
+            {{x}}
+        </li>
+        {%endfor%}
+     <!--<li>
+      Artificial Intelligence
+     </li>
+     <li>
+      Machine Learning
+     </li>
+     <li>
+      Web Development
+     </li>-->
+    </ul>
+    <h2 id="hobbies">
+     Hobbies
+    </h2>
+    <ul>
+        {%for hobby in hobbies%}
+        <li>
+            {{hobby}}
+        </li>
+        {%endfor%}
+     <!--<li>
+      Reading
+     </li>
+     <li>
+      Traveling
+     </li>
+     <li>
+      Photography
+     </li>-->
+    </ul>
+    <h2 id="skills">
+     Skills
+    </h2>
+    <ul>
+        {%for skill in skills%}
+        <li>
+            {{skill}}
+        </li>
+        {%endfor%}
+    <!--<li>
+      Python
+     </li>
+     <li>
+      JavaScript
+     </li>
+     <li>
+      React
+     </li>
+     <li>
+      Node.js
+     </li>-->
+    </ul>
+    <h2 id="work-experience">
+     Work Experience
+    </h2>
+    <ul>
+     <li>
+      Software Engineer at ABC Corp
+     </li>
+     <li>
+      Data Scientist at XYZ Inc
+     </li>
+    </ul>
+    <h2 id="achievements">
+     Achievements
+    </h2>
+    <ul>
+        {%for achievement in achievements%}
+        <li>
+            {{achievement}}
+        </li>
+        {%endfor%}
+     <!--<li>
+      Employee of the Year 2020
+     </li>
+     <li>
+      Best Data Science Project 2019
+     </li>-->
+    </ul>
+    <h2 id="contact-info">
+     Contact Info
+    </h2>
+    <ul>
+     <li>
+      Email: john.doe@example.com
+     </li>
+     <li>
+      Phone: (123) 456-7890
+     </li>
+    </ul>
+</div>
+<!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-content">
+     <span class="close" id="closeModal">
+      ×
+     </span>
+     <img alt="Profile Picture" src="https://placehold.co/300x300" class="hi" id="img" />
+     <div id="vid-container" class="hidden " >
+     <video id="vid"  autoplay style="width: 100%;"></video>
+     </div>
+     <div id="pictureContainer" class="mt-4 hidden">
+        <img id="capturedImage" class="w-full max-w-md mx-auto rounded-md shadow-md" alt="Captured image from the camera">
+        <div class="mt-4">
+            <button id="cancelPictureBtn" class=""> Cancel</button>
+            <button id="okBtn" class="">OK</button>
+            
+        </div>
+    </div>
+     <button class="select-profile-pic" id="select-profile-pic" onclick="openCamera()">
+        <i class="fas fa-camera"></i> Select Picture
+    </button>
+    <input type="file" accept="image/*" capture="environment" id="select-pic" style="display: none; " onchange="displaySelectedImage(event)">
+    <button id="update-profile-pic" class="">Update Profile Pic</button>
+    <button id="cancelVideoBtn" class="hidden">Cancel</button>
+    <button id="takePictureBtn" class="hidden">Take Picture</button>
+    
+    </div>
+   </div>
+   <script>
+    const imgElement = document.getElementById("img");
+    function openCamera(){
+        document.getElementById("select-pic").click();
+    }
+    function displaySelectedImage(event) {
+            const file = event.target.files[0]; // Get the selected file
+            
+
+            if (file) {
+                const reader = new FileReader(); // Create a FileReader object
+
+                reader.onload = function(e) {
+                    const pp=document.getElementById("profilePic");
+                    pp.src=e.target.result;
+                    imgElement.src = e.target.result; // Set the src of the img element to the file data
+                    imgElement.style.display = 'block'; // Show the image
+                    modal.style.display="none";
+                    sendImageToServer(file);
+                };
+
+                reader.readAsDataURL(file); // Read the file as a data URL
+            }
+        }
+
+
+        function sendImageToServer(file) {
+    const formData = new FormData();
+    formData.append('image', file,"{{firstname}} {{middlename}} {{lastname}}.png"); // Append the file to the FormData object
+
+    // Send the AJAX request
+    fetch('{%url "updateProfilePic" %}', { // Replace with your Django URL
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken') // Include CSRF token if needed
+        }
+    })
+    .then(response => {
+        return response.text(); // Get the response as text
+    })
+    .then(data => {
+        console.log('Response data:', data); // Log the raw response
+        /*try {
+            const jsonData = JSON.parse(data); // Attempt to parse JSON
+            // Process jsonData
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+        }*/
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+    });
+}
+
+// Function to get CSRF token from cookies (if using Django's CSRF protection)
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if this cookie string begins with the name we want
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+        
+   </script>
+   
+   <!-- Edit Modal -->
+ <div class="modal" id="editModal">
+    <div class="edit-modal-content">
+     <span class="close" id="closeEditModal">
+      ×
+     </span>
+     <h2>
+      Edit Profile
+     </h2>
+     <form id="editForm">
+      <label for="firstname">
+       First Name:
+      </label>
+      <input id="firstname" name="firstname" type="text" value="{{firstname}}"/>
+      <label for="middlename">
+        Middle Name:
+       </label>
+       <input id="middlename" name="middlename" type="text" value="{{middlename}}"/>
+       <label for="lastname">
+        Last Name:
+       </label>
+       <input id="lastname" name="lastname" type="text" value="{{lastname}}"/>
+      <label for="username">
+       Username:
+      </label>
+      <input id="username" name="username" type="text" value="{{username}}" disabled/>
+      <label for="email">
+       Email:
+      </label>
+      <input id="email" name="email" type="email" value="{{email}}" disabled />
+      <label for="dob">
+        Date of Birth:
+      </label>
+      <input id="dob" name="dob" type="date"/>
+      <label for="phno">
+        Phone Number:
+      </label>
+      <input id="phno" name="phno" type="number" value="{{phno}}"/>
+      <label for="languages">
+        Languages:
+      </label>
+      <select id="select-languages" name="select-languages" multiple size="5">
+        <option value="chinese">Chinese</option>
+        <option value="english">English</option>
+        <option value="korean">Korean</option>
+        <option value="hindi">Hindi</option>
+        <option value="telugu">Telugu</option>
+        <option value="tamil">Tamil</option>
+      </select>
+      <label for="location">
+       Location:
+      </label>
+      <input id="location" name="location" type="text" value="New York, USA"/>
+      <label for="education">
+       Education:
+      </label>
+      <textarea id="education2" name="education">
+ Bachelor of Science in Computer Science
+ Master of Science in Data Science
+ </textarea>
+      <label for="interests">
+       Interests:
+      </label>
+      <input type="text" id="interests2" name="interests2"  placeholder="Add Interests"/>
+      <ul class="interests-list" id="interests-list"></ul>
+      <label for="hobbies">
+       Hobbies:
+      </label>
+      <textarea id="hobbies2" name="hobbies2">
+ Reading
+ Traveling
+ Photography
+ </textarea>
+      <label for="skills">
+       Skills:
+      </label>
+      <textarea id="skills2" name="skills2">
+ Python
+ JavaScript
+ React
+ Node.js
+ </textarea>
+      <label for="work-experience" id="work">
+       Work Experience:
+      </label>
+      <textarea id="work-experience" name="work-experience">
+ Software Engineer at ABC Corp
+ Data Scientist at XYZ Inc
+ </textarea>
+      <label for="achievements">
+       Achievements:
+      </label>
+      <textarea id="achievements2" name="achievements2">
+ Employee of the Year 2020
+
+ Best Data Science Project 2019
+ </textarea>
+      <label for="contact-info">
+       Contact Info:
+      </label>
+      <textarea id="contact-info" name="contact-info">
+ Email: john.doe@example.com
+ Phone: (123) 456-7890
+ </textarea>
+      <button type="submit">
+       Submit
+      </button>
+     </form>
+    </div>
+   </div>
+   <script>
+    // Get the modal
+         var modal = document.getElementById("modal");
+ 
+         
+         // Get the edit modal
+         var editModal = document.getElementById("editModal");
+ 
+         // Get the button that opens the edit modal
+         var editButton = document.getElementById("editButton");
+ 
+         // Get the <span> element that closes the edit modal
+         var closeEditModal = document.getElementById("closeEditModal");
+ 
+         // When the user clicks the button, open the edit modal
+         editButton.onclick = function() {
+             editModal.style.display = "block";
+         }
+ 
+         // When the user clicks on <span> (x), close the edit modal
+         closeEditModal.onclick = function() {
+             editModal.style.display = "none";
+         }
+ 
+         // When the user clicks anywhere outside of the edit modal, close it
+         window.onclick = function(event) {
+             if (event.target == editModal) {
+                 editModal.style.display = "none";
+             }
+         }
+         function SubmitForm(event){
+            var firstname=document.getElementById("firstname");
+            
+            firstname=firstname.value.trim();
+            var middlename=document.getElementById("middlename");
+            
+            middlename=middlename.value.trim();
+            var lastname=document.getElementById("lastname");
+            
+            lastname=lastname.value.trim();
+            var username=document.getElementById("username");
+            
+            username=username.value.trim();
+            var email=document.getElementById("email");
+            
+            email=email.value.trim();
+            var dob=document.getElementById("dob");
+            
+            dob=dob.value.trim();
+            var phno=document.getElementById("phno");
+           
+            phno=phno.value.trim();
+            var interests=document.getElementById("interests2");
+            interests=interests.value.trim();
+            
+            var hobbies=document.getElementById("hobbies2");
+            var skills=document.getElementById("skills2");
+            var achievements=document.getElementById("achievements2");
+            hobbies=hobbies.value.trim();
+            skills=skills.value.trim();
+            achievements=achievements.value.trim();
+            interests = interests.split(",").map(item => item.trim()).filter(item => item); // Split by comma and trim
+            hobbies = hobbies.split("\n").map(item => item.trim()).filter(item => item); // Split by newline and trim
+            skills = skills.split("\n").map(item => item.trim()).filter(item => item); // Split by newline and trim
+            achievements = achievements.split("\n").map(item => item.trim()).filter(item => item); // Split by newline and trim
+            document.getElementById("firstname").value="";
+            document.getElementById("middlename").value="";
+            document.getElementById("lastname").value="";
+            document.getElementById("username").value="";
+            document.getElementById("email").value="";
+            document.getElementById("dob").value="";
+            document.getElementById("phno").value="";
+            document.getElementById("interests2").value="";
+            document.getElementById("hobbies2").value="";
+            document.getElementById("skills2").value="";
+            document.getElementById("achievements2").value="";
+            $.ajax({
+                    url: '{% url "update_profile_details" %}',  // URL to your API view
+                    method: 'POST',
+                    data: {
+                            'csrfmiddlewaretoken': '{{csrf_token}}',
+                            'firstname':firstname,
+                            'middlename':middlename,
+                            'lastname':lastname,
+                            'username':username,
+                            'email':email,
+                            'dob':dob,
+                            'phno':phno,
+                            'interests':JSON.stringify(interests),
+                            'hobbies':JSON.stringify(hobbies),
+                            'skills':JSON.stringify(skills),
+                            'achievements':JSON.stringify(achievements),
+                        },
+                    success: function(data) {
+                        console.log("success",data);
+                        var name=document.querySelector("#basic + ul");
+                        name=name.querySelector('li:nth-child(1)');
+                        name.textContent=`First Name: ${data.firstname}`;
+                        var mname=document.querySelector("#basic + ul");
+                        mname=mname.querySelector('li:nth-child(2)');
+                        mname.textContent=`Middle Name: ${data.middlename}`;
+                        var lname=document.querySelector("#basic + ul");
+                        lname=lname.querySelector('li:nth-child(3)');
+                        lname.textContent=`Last Name: ${data.lastname}`;
+                        var dob=document.querySelector("#basic + ul");
+                        dob=dob.querySelector('li:nth-child(4)');
+                        dob.textContent=`Date Of Birth: ${data.dob}`;
+                        var phno=document.querySelector("#basic + ul");
+                        phno=phno.querySelector('li:nth-child(5)');
+                        phno.textContent=`Contact No: ${data.phno}`;
+
+                        data.interests.forEach(element => {
+                            var phno=document.querySelector("#interests + ul");
+                            var phoItem=document.createElement("li");
+                            phoItem.textContent=element;
+                            phno.appendChild(phoItem);
+                        });
+
+                        data.hobbies.forEach(element => {
+                            var phno=document.querySelector("#hobbies + ul");
+                            var phoItem=document.createElement("li");
+                            phoItem.textContent=element;
+                            phno.appendChild(phoItem);
+                        });
+
+                        data.skills.forEach(element => {
+                            var phno=document.querySelector("#skills + ul");
+                            var phoItem=document.createElement("li");
+                            phoItem.textContent=element;
+                            phno.appendChild(phoItem);
+                        });
+
+                        data.achievements.forEach(element => {
+                            var phno=document.querySelector("#achievements + ul");
+                            var phoItem=document.createElement("li");
+                            phoItem.textContent=element;
+                            phno.appendChild(phoItem);
+                        });
+                        
+                        
+                        var hepr=document.querySelector(".profile-info + h");
+                        hepr.textContent=`${data.firstname} ${data.middlename} ${data.lastname}`;
+
+
+                    }
+            });
+         }
+         // Handle form submission
+         document.getElementById("editForm").onsubmit = function(event) {
+             event.preventDefault();
+             // Here you can handle the form submission, e.g., send the data to the server
+             SubmitForm(event);
+             alert("Form submitted!");
+             editModal.style.display = "none";
+         }
+   </script>
+   <script>
+    // Get the modal
+         var modal = document.getElementById("myModal");
+ 
+         // Get the image and insert it inside the modal
+         var img = document.getElementById("profilePic");
+         var modalImg = modal.getElementsByTagName("img")[0];
+         img.onclick = function(){
+             modal.style.display = "block";
+             modalImg.src = this.src;
+         }
+ 
+         // Get the <span> element that closes the modal
+         var span = document.getElementById("closeModal");
+ 
+         // When the user clicks on <span> (x), close the modal
+         span.onclick = function() {
+             modal.style.display = "none";
+             stream.getTracks().forEach(track => track.stop());
+             try{
+                 stream.getTracks().forEach(track => track.stop());
+                 }
+                 catch{
+                    console.log("");
+                 }
+         }
+ 
+         // When the user clicks anywhere outside of the modal, close it
+         window.onclick = function(event) {
+             if (event.target == modal) {
+                 modal.style.display = "none";
+                 try{
+                 stream.getTracks().forEach(track => track.stop());
+                 }
+                 catch{
+                    console.log("");
+                 }
+             }
+            }
+
+            let stream;
+            let capturedBlob;
+            const video = document.getElementById('vid');
+            const videoCon=document.getElementById('vid-container');
+            const im=document.getElementById("img");
+            const sel_pic_b=document.getElementById("select-profile-pic");
+            const up_pro_pic_b=document.getElementById("update-profile-pic");
+            const takePictureBtn = document.getElementById('takePictureBtn');
+            const cancelVideoBtn = document.getElementById('cancelVideoBtn');
+            const pictureContainer = document.getElementById('pictureContainer');
+            const capturedImage = document.getElementById('capturedImage');
+            const okBtn = document.getElementById('okBtn');
+            const cancelPictureBtn = document.getElementById('cancelPictureBtn');
+
+            document.getElementById('update-profile-pic').addEventListener('click', async () => {
+            
+            im.classList.add("hidden");
+            try{
+            imgElement.classList.add("hidden");//if we select files from first
+            }
+            catch{
+                console.log("");
+            }
+            videoCon.classList.remove("hidden");
+            sel_pic_b.classList.add("hidden");
+            up_pro_pic_b.classList.add("hidden");
+            takePictureBtn.classList.remove("hidden");
+            cancelVideoBtn.classList.remove("hidden");
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = stream;
+                } catch (err) {
+                    console.error("Error accessing the camera: ", err);
+                }
+            } else {
+                alert("Camera not supported on this device.");
+            }
+        });
+
+        //cancel video button
+        cancelVideoBtn.addEventListener('click', () => {
+            if (stream) { // Check if stream is defined
+        stream.getTracks().forEach(track => track.stop());
+            }
+            videoCon.classList.add('hidden');
+            up_pro_pic_b.classList.remove('hidden');
+            im.classList.remove("hidden");
+            cancelVideoBtn.classList.add("hidden");
+            takePictureBtn.classList.add("hidden");
+            sel_pic_b.classList.remove("hidden");
+        });
+        //take picture
+        takePictureBtn.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+                capturedBlob=blob;
+                capturedImage.src = URL.createObjectURL(blob);
+                
+            }, 'image/png');
+            videoCon.classList.add('hidden');
+            pictureContainer.classList.remove('hidden');
+            cancelVideoBtn.classList.add("hidden");
+            takePictureBtn.classList.add("hidden");
+        });
+        //okaying the picture
+        okBtn.addEventListener('click', () => {
+            alert("Picture saved!");
+            pictureContainer.classList.add('hidden');
+            up_pro_pic_b.classList.remove('hidden');
+            sel_pic_b.classList.remove('hidden');
+            im.src=capturedImage.src;
+            const pp=document.getElementById("profilePic");
+            pp.src=capturedImage.src;
+            im.classList.remove("hidden");
+            stream.getTracks().forEach(track => track.stop());
+
+            modal.style.display="none";
+            const blob = capturedImage.dataset.blob;
+            const formData = new FormData();
+            formData.append('image', capturedBlob, '{{firstname}} {{middlename}} {{lastname}}.png');
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');  // Ensure you have CSRF token in your template
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "updateProfilePic" %}',  // Replace with your Django view URL
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log("image sent");
+                },
+                error: function(error) {
+                    console.error("Error sending the picture: ", error);
+                    console.error("Response Text: ", error.responseText);
+                    console.error("Status Text: ", error.statusText);
+                }
+            });
+            
+        });
+        //cancel the picture
+        cancelPictureBtn.addEventListener('click', () => {
+            pictureContainer.classList.add('hidden');
+            up_pro_pic_b.classList.remove('hidden');
+            sel_pic_b.classList.remove('hidden');
+            im.classList.remove("hidden");
+            stream.getTracks().forEach(track => track.stop());
+        });
+   </script>
+{%endblock content%}

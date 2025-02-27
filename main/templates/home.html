@@ -1,0 +1,541 @@
+<html>
+ <head>
+  <title>{%block title%}
+   Connect The Peers
+   {%endblock title%}
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+   body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #4A7A7A;
+        }
+        .header {
+            position: fixed;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+        }
+        .header .logo {
+            display: flex;
+            align-items: center;
+        }
+        .header img {
+            height: 50px;
+        }
+        .header h1 {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: #4CAF50;
+            margin: 0 20px 0 10px;
+        }
+        .header .nav-links {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .header .nav-links a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #555;
+            font-size: 16px;
+        }
+        .header .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #f1f1f1;
+            border-radius: 20px;
+            padding: 5px 10px;
+            flex-grow: 1;
+            max-width: 350px;
+        }
+        .header .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            padding: 5px;
+            flex-grow: 1;
+        }
+        .header .search-bar i {
+            color: #aaa;
+        }
+        .header .profile {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .header .profile i {
+            font-size: 30px;
+            color: #555;
+        }
+        .header .profile .dropdown {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 1;
+            width: 200px;
+        }
+        .header .profile .dropdown a {
+            display: block;
+            padding: 10px 20px;
+            text-decoration: none;
+            color: #555;
+            font-size: 16px;
+        }
+        .header .profile .dropdown a:hover {
+            background-color: #f1f1f1;
+        }
+        .header .profile:hover .dropdown {
+            display: block;
+        }
+        .sidebar {
+            width: 60px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+        }
+        .sidebar button {
+            background: none;
+            border: none;
+            color: #555;
+            font-size: 24px;
+            margin: 20px 0;
+            position: relative;
+            cursor: pointer;
+        }
+        .sidebar button:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 60px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        {%block contentstyle %}
+        .content {
+            margin-left: 60px;
+            padding: 20px;
+            display: flex;
+        }
+        .content .posts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            flex: 1;
+        }
+        .content .post {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 10px;
+            width: calc(50% - 20px);
+            box-sizing: border-box;
+        }
+        .content .post img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        .content .post .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .content .post .post-header i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        .content .suggestions {
+            background-color: #e0e0e0;
+            padding: 10px;
+            border-radius: 10px;
+            margin-left: 20px;
+            width: 300px;
+        }
+        .content .suggestions h2 {
+            margin: 0 0 10px 0;
+            color: #888;
+        }
+        .content .suggestions .suggestion {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .content .suggestions .suggestion i {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        {%endblock contentstyle%}
+  </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+ <script>
+    // Generate the URL using Django's template tag
+    document.addEventListener('DOMContentLoaded', function() {
+            const chatsurl = "{% url 'chats' %}";
+            const networksurl='{%url "networks"%}';
+            const homeurl="{%url 'home'%}";
+            const notificationsurl="{%url 'notifications'%}";
+            const activityurl="{%url 'activity' %}";
+            const addPostsurl="{% url 'addPosts' %}";
+            document.getElementById('chatsBut').onclick = function() {
+                window.location.href = chatsurl; // Redirect to the URL
+            };
+            document.getElementById('networksBut').onclick = function() {
+                window.location.href = networksurl; // Redirect to the URL
+            };
+            document.getElementById('homeBut').onclick = function() {
+                window.location.href = homeurl; // Redirect to the URL
+            };
+            document.getElementById('notificationsBut').onclick = function() {
+                window.location.href = notificationsurl; // Redirect to the URL
+            };
+            document.getElementById('activityBut').onclick = function() {
+                window.location.href = activityurl; // Redirect to the URL
+            };
+            document.getElementById('addPostsBut').onclick = function() {
+                window.location.href = addPostsurl; // Redirect to the URL
+            };
+        });
+        {%block script%}
+        console.log('scriptblock');
+        {%endblock script%}
+</script>
+ </head>
+ <body>
+    
+  <div class="header">
+   <div class="logo">
+    <img alt="Logo" height="50" src="https://storage.googleapis.com/a1aa/image/1lvUemGCAAxkG6VCJUH1vvJAXDUgRY65VKLOY4Zve52eZ3onA.jpg" width="50"/>
+    <h1>
+     Connect The Peers
+    </h1>
+    <div class="nav-links">
+     <a href="#">
+      New
+     </a>
+     <a href="#">
+      Interest
+     </a>
+     <a href="#">
+      Top Skills
+     </a>
+    </div>
+   </div>
+   <div class="search-bar">
+    <input placeholder="search" type="text"/>
+    <i class="fas fa-times">
+    </i>
+   </div>
+   <div class="profile">
+    <i class="fas fa-user-circle">
+    </i>
+    <div class="dropdown">
+     <a href="{%url 'profile' %}">
+      Profile
+     </a>
+     <a href="#">
+      Settings
+     </a>
+     <a href="{% url 'signout' %}">
+      Sign Out
+     </a>
+    </div>
+   </div>
+  </div>
+  <div class="sidebar">
+   <button data-tooltip="Home" id="homeBut">
+    <i class="fas fa-home">
+    </i>
+   </button>
+   <button data-tooltip="Chat" id="chatsBut">
+    <i class="fas fa-comments">
+    </i>
+   </button>
+   <button data-tooltip="Network" id="networksBut">
+    <i class="fas fa-users">
+    </i>
+   </button>
+   <button data-tooltip="Notifications" id="notificationsBut">
+    <i class="fas fa-bell">
+    </i>
+   </button>
+   <button data-tooltip="Activity" id="activityBut">
+    <i class="fas fa-chart-line">
+    </i>
+   </button>
+   <button data-tooltip="Add Posts" id="addPostsBut">
+    <i class="fas fa-folder-plus">
+    </i>
+   </button>
+   <button data-tooltip="Friends' Posts">
+    <i class="fas fa-user-friends">
+    </i>
+   </button>
+  </div>
+  {%block content%}
+  <div class="content" >
+   <div class="posts" style="margin-top: 4%;">
+    <!--
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>-->
+    {%for i in ss%}
+    <div class="post">
+     <div class="post-header">
+      <i >
+        {%if i.profile.profile_pic %}
+        <img   src="{{i.profile.profile_pic.url}}" style="width: 30px; height: 30px; border-radius: 50%;"/>
+        {%else%}
+        <img   src="https://placehold.co/100x100" style="width: 30px; height: 30px; border-radius: 50%;"/>
+        {%endif%}
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        {{i.profile.first_name}} {{i.profile.middle_name}} {{i.profile.last_name}}
+       </div>
+       <div class="post-time">
+        <t>{{i.profile.user_name}}</t>
+        <t style="padding-left:  200px;">{{i.posted_at}}</t>
+       </div>
+      </div>
+     </div>
+     {%if i.post %}
+        <img   src="{{i.post.url}}" style="width: 500px; height: 200px; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
+        {%else%}
+        <img   src="https://placehold.co/100x100" style="width: 500px; height: 200px; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
+        {%endif%}
+     <!--<img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    -->
+     
+     
+     <div style="margin-top: 15px;height: 20px;">
+      <span class="spanstyle"  id="likeButton_{{forloop.counter}}" style="margin-left: 2px; margin-right: 5px; display: inline-block; cursor: pointer; " onclick="likefunction(this)" post_id="{{i.id}}"> <i class="fa fa-heart" style="color: red; margin-right: 2px; "></i> Likes</span>
+       <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"> <i class="fa fa-comments" style="margin-left: 2px;" ></i > Comments</span>
+       <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"><i class="fa fa-share" style="margin-left: 2px;" > </i> Share</span>
+     </div>
+    </div>
+    {%endfor%}
+    <style>
+        .spanstyle {
+            display: inline-block; /* Make it behave like a block element */
+            border: 1px solid transparent; /* Initial border */
+            border-radius: 5px; /* Rounded corners */
+            transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+            cursor: pointer; /* Change cursor to pointer */
+        }
+
+        
+
+        .active .fa-heart {
+            transform: scale(1.5); /* Increase size of the icon when active */
+            transition: transform 0s; /* Smooth transition for the icon */
+        }
+        .fa-heart{
+            transition: transform 0.3s;
+        }
+     </style>
+    <script>
+        //const likeButton = document.getElementById('likeButton');
+   
+        function likefunction(element) {
+               element.classList.toggle('active'); // Toggle the 'active' class on click
+               postId=element.getAttribute('post_id');
+               console.log(postId);
+               $.ajax({
+                        url: "{% url 'addLike' %}",
+                        type: 'POST',
+                        data: {
+                            'csrfmiddlewaretoken': '{{csrf_token}}',
+                            'post_id':postId,
+                            'liked_by':'{{request.user}}',
+                        },
+                        success: function(response) {
+                            console.log("liked");
+                        },
+                        error: function(xhr, status, error) {
+                            
+                            alert("An error occurred while liking the post. Please try again."); // Notify the user
+                        }
+            });
+           setTimeout(() => {
+            element.classList.remove('active'); // Remove the active class after a delay
+        }, 400);
+        
+    };
+           </script>
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>
+    <div class="post">
+     <div class="post-header">
+      <i class="fas fa-user-circle">
+      </i>
+      <div class="post-info">
+       <div class="post-author">
+        Author Name
+       </div>
+       <div class="post-time">
+        Time
+       </div>
+      </div>
+     </div>
+     <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
+    </div>
+   </div>
+   <div class="suggestions" style="margin-top: 4%;">
+    <h2>
+     suggestions
+    </h2>
+    <div class="suggestion">
+     <i class="fas fa-user-circle">
+     </i>
+     <div class="suggestion-info">
+      <div class="suggestion-name">
+       User Name
+      </div>
+      <div class="suggestion-details">
+       Details
+      </div>
+     </div>
+    </div>
+    <div class="suggestion">
+     <i class="fas fa-user-circle">
+     </i>
+     <div class="suggestion-info">
+      <div class="suggestion-name">
+       User Name
+      </div>
+      <div class="suggestion-details">
+       Details
+      </div>
+     </div>
+    </div>
+    {%for i in ss%}
+    <div class="suggestion">
+     <i >
+        {%if i.profile_pic %}
+        <img   src="{{i.profile_pic.url}}" style="width: 30px; height: 30px; border-radius: 50%;"/>
+        {%else%}
+        <img   src="https://placehold.co/100x100" style="width: 30px; height: 30px; border-radius: 50%;"/>
+        {%endif%}
+     </i>
+     <div class="suggestion-info">
+       
+      <div class="suggestion-name">
+       {{i.user_name.username}}
+      </div>
+      <div class="suggestion-details">
+       Details
+      </div>
+     </div>
+    </div>
+    {%endfor%}
+    <div class="suggestion">
+     <i class="fas fa-user-circle">
+     </i>
+     <div class="suggestion-info">
+      <div class="suggestion-name">
+       User Name
+      </div>
+      <div class="suggestion-details">
+       Details
+      </div>
+     </div>
+    </div>
+   </div>
+  </div>
+  {%endblock content%}
+ </body>
+</html>

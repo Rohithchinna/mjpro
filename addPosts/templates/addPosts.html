@@ -1,0 +1,203 @@
+{%extends "C:\Users\Rohith Endoori\majorprojectvenv\mjpro\main\templates\home.html" %}
+
+{%block contentstyle%}
+.container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+.main-content {
+    background-color: #ffffff;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    flex: 2;
+    min-width: 900px;
+    overflow-y: auto;
+    margin-left: 70px;
+    max-height:900px;
+
+
+}
+.sidebar2 {
+    background-color: #ffffff;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #ddd;
+    flex: 1;
+    min-width: 200px;
+    overflow-y: auto;
+
+}
+.main-content h2, .sidebar2 h2 {
+    font-size: 24px;
+    color: #333;
+}
+.image-upload {
+    width: 100%;
+    height: 300px;
+    background-color: #e0e0e0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed #ccc;
+    margin-bottom: 20px;
+    
+}
+.image-upload img {
+    width: 100%;
+    height: 300px;
+}
+.image-upload input[type="file"] {
+    display: none;
+}
+.image-upload label {
+    position: absolute;
+    cursor: pointer;
+}
+.post {
+    margin-bottom: 20px;
+}
+.post h3 {
+    font-size: 18px;
+    color: #333;
+}
+.post h4 {
+    font-size: 16px;
+    color: #333;
+}
+.post p {
+    font-size: 14px;
+    color: #666;
+}
+.resource {
+    margin-top: 20px;
+}
+.resource h4 {
+    font-size: 16px;
+    color: #333;
+}
+.resource input[type="checkbox"] {
+    margin-right: 10px;
+}
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+}
+.bottom-line-input {
+    border: none; /* Remove default border */
+    border-bottom: 2px solid #4A7A7A; /* Add bottom border */
+    outline: none; /* Remove outline on focus */
+    padding: 10px; /* Add some padding */
+    width: 300px; /* Set width */
+    font-size: 14px; /* Set font size */
+    background-color: transparent; /* Make background transparent */
+}
+{%endblock contentstyle%}
+
+{%block content%}
+<div class="container" >
+<div class="main-content" style="margin-top: 5%; overflow-y: auto;">
+    <form action="{% url 'uploadPost'%}" method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+    <h2>
+     Add post
+    </h2>
+    <div class="image-upload">
+        <img class="uploadedPost" src="" id="uploadedPost"  style="display: none;"/>
+     <input id="file-input" type="file" name="file" onselect="alert('hi')"/>
+     <label for="file-input">
+      <!--<img alt="Upload icon" height="50" src="https://storage.googleapis.com/a1aa/image/4E6uNWPTuN51C1af6FdAoIBDXfq87nvLg2CWTQp8FlDe5wPoA.jpg" width="50"/>
+     -->
+      <i class="fas fa-plus" style="font-size: 24px; color: #333; ">
+        
+      </i>
+      Upload a Post
+     </label>
+     
+    </div>
+    <p id="file-name"></p>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function() {
+    const fileInput = document.getElementById('file-input');
+    const fileNameDisplay = document.getElementById('file-name');
+    const uploadedPost=document.getElementById('uploadedPost')
+    
+    if (fileInput.files.length > 0) {
+        const selectedFile = fileInput.files[0].name;
+        fileNameDisplay.textContent = "Selected File: " + selectedFile;
+        
+    } else {
+        fileNameDisplay.textContent = "No file selected.";
+    }
+    const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPost.src = e.target.result; // Set the src of the img tag
+                    uploadedPost.style.display = 'block'; // Show the image
+                }
+                reader.readAsDataURL(file); // Read the file as a data URL
+            }
+});
+    </script>
+    <div class="post">
+     <h3>
+      Title
+     </h3>
+     <p>
+
+      <input type="text" class="bottom-line-input" placeholder="Enter Title here..." required name="title">
+     </p>
+     <h4>
+        Description
+       </h4>
+       <p>
+        
+        
+        <textarea style="height: 100px; width: 100%;" required name="description"></textarea>
+       </p>
+    </div>
+    <div class="resource">
+     <h4>
+      Resource
+     </h4>
+     <p>
+      Add resource link
+     </p>
+     <input type="checkbox"/>
+     Add resource material
+    </div>
+    <div style="display: flex; flex-direction: row; ">
+        <button type="submit" >Upload</button>
+    </div>
+    </form>
+   </div>
+   <div class="sidebar2" style="margin-top: 5%;">
+    {%for i in posts%}
+    <div class="post">
+     <img alt="Post image" height="100" src={{i.post.url}} width="100"/>
+     <h3>
+      {{i.title}}
+     </h3>
+     <p>
+        {{i.description}}
+     </p>
+    </div>
+    {%endfor%}
+    <div class="post">
+     <img alt="Post image" height="100" src="https://storage.googleapis.com/a1aa/image/kU4e80MexDpz2EwLA8UaDTn21eSQdEvSmfReYHpUpfseec4HUA.jpg" width="100"/>
+     <h3>
+      Title
+     </h3>
+     <p>
+      Body text for whatever you'd like to say. Add main takeaway points, quotes, anecdotes, or even a very very short story.
+     </p>
+     
+    </div>
+        
+   </div>
+  </div>
+ 
+{%endblock content%}

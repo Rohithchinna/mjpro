@@ -1,0 +1,598 @@
+{%extends "C:\Users\Rohith Endoori\majorprojectvenv\mjpro\main\templates\home.html"%}
+{%block contentstyle%}
+        .content {
+            margin-left: 60px;
+            padding: 20px;
+            display: flex;
+            height:85%;
+            
+        }
+        .chat-list {
+            width: 300px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .chat-list h2 {
+            margin: 0 0 20px 0;
+            color: #555;
+        }
+        .chat-list .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .chat-list .chat-item:hover {
+            background-color: #f1f1f1;
+        }
+
+        .chat-list .chat-item img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .chat-list .chat-item .chat-info {
+            flex-grow: 1;
+        }
+        .chat-list .chat-item .chat-info .chat-name {
+            font-size: 16px;
+            color: #333;
+        }
+        .chat-list .chat-item .chat-info .chat-last-message {
+            font-size: 14px;
+            color: #888;
+        }
+        .chat-window {
+            flex-grow: 1;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-window .chat-header {
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .chat-window .chat-header img {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+        .chat-window .chat-header .chat-name {
+            font-size: 18px;
+            color: #333;
+        }
+        .chat-window .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        .chat-window .chat-messages .message {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .chat-window .chat-messages .message .message-content {
+            display: inline-block;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 70%;
+        }
+        .chat-window .chat-messages .message.sent {
+            justify-content: flex-end;
+        }
+        .chat-window .chat-messages .message.sent .message-content {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+        }
+        .chat-window .chat-messages .message.received .message-content {
+            background-color: #f1f1f1;
+        }
+        .chat-window .chat-input {
+            display: flex;
+            align-items: center;
+        }
+        .chat-window .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+        .chat-window .chat-input button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            font-size: 24px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .chat-window .chat-input .file-input {
+            display: none;
+        }
+        .chat-window .chat-input .file-label {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            font-size: 24px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            flex-direction: column;
+        }
+        .modal-content video {
+            width: 100%;
+            height: auto;
+        }
+        .modal-content button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-content button:hover {
+            background-color: #45a049;
+        }
+        {%endblock contentstyle%}
+    
+        {%block script%}
+
+        
+        
+        function openChat(friendName) {
+                // Update the chat header with the friend's name
+                document.getElementById('friendName').textContent = friendName;
+        
+                // Clear previous messages
+                var chatMessages = document.getElementById('chatMessages');
+                chatMessages.innerHTML = ''; // Clear existing messages
+                var url =`past_messages/${friendName}`;
+                $.ajax({
+                    url: url,  // URL to your API view
+                    method: 'GET',
+
+                    success: function(data) {
+                        
+                var messages = data;
+                console.log(messages)
+                // Populate the chat messages
+                for (const message in messages) {
+                    console.log(message)
+                    var messageElement = document.createElement('div');
+                    messageElement.classList.add('message', message.includes('sender') ? 'sent' : 'received');
+                    var messageContent = document.createElement('div');
+                    messageContent.classList.add('message-content');
+                    messageContent.textContent = messages[message];
+                    messageElement.appendChild(messageContent);
+                    chatMessages.appendChild(messageElement);
+                }
+        
+                // Scroll to the bottom of the chat messages
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                    },
+                    error: function(error) {
+                        console.error("Error fetching data:", error);
+                    }
+                });
+                
+            }
+        
+
+
+
+
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        function sendMessage() {
+            var input = document.getElementById("chatInput");
+            var message = input.value.trim();
+            console.log("find sendMessage button error");
+            var csrf='{{csrf_token}}';
+            if (message !== "") {
+                
+
+
+                
+                    /*$.ajax({
+                        url: "{% url 'add_to_Messages' %}",
+                        type: 'POST',
+                        data: {
+                            'csrfmiddlewaretoken': csrf,
+                            'message':message,
+                            'receiver':document.getElementById('chat-name').textContent
+                        },
+                        success: function(response) {
+                            $('#result').html(response);
+                            var chatMessages = document.getElementById("chatMessages");
+                            var messageElement = document.createElement("div");
+                            messageElement.classList.add("message", "sent");
+                            var messageContent = document.createElement("div");
+                            messageContent.classList.add("message-content");
+                            messageContent.textContent = message;
+                            messageElement.appendChild(messageContent);
+                            chatMessages.appendChild(messageElement);
+                            input.value = "";
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error sending message:", error); // Log the error
+                            alert("An error occurred while sending the message. Please try again."); // Notify the user
+                        }
+                    });
+                */
+                
+                
+
+
+
+                
+            }
+        }
+
+        function sendFile(event) {
+            var file = event.target.files[0];
+            if (file) {
+                var chatMessages = document.getElementById("chatMessages");
+                var messageElement = document.createElement("div");
+                messageElement.classList.add("message", "sent");
+                var messageContent = document.createElement("div");
+                messageContent.classList.add("message-content");
+                messageContent.textContent = "Sent a file: " + file.name;
+                messageElement.appendChild(messageContent);
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        
+        
+    
+    
+        let imageCapture;
+        let currentStream;
+    
+        /*function CapturedPic() {
+            let r=getElementById("cameraVideo")
+            r.style.display='none'
+            var video = document.getElementById('cameraVideo');
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var dataURL = canvas.toDataURL('image/png');
+
+            var chatMessages = document.getElementById('chatMessages');
+            var messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'sent');
+            var messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            var img = document.createElement('img');
+            img.src = dataURL;
+            img.style.width = '100%';
+            img.style.height = 'auto';
+            messageContent.appendChild(img);
+            messageElement.appendChild(messageContent);
+            chatMessages.appendChild(messageElement);
+
+            document.getElementById('cameraModal').style.display = 'none';
+            cameraStream.getTracks().forEach(track => track.stop());
+        }*/
+    function openCamera() {
+    var modal = document.getElementById("cameraModal");
+    var video = document.getElementById("cameraVideo");
+    var captureButton = document.getElementById("captureButton");
+    var recordButton = document.getElementById("recordButton");
+    var stopButton = document.getElementById("stopButton");
+    var previewModal = document.getElementById("previewModal");
+    var previewVideo = document.getElementById("previewVideo");
+    var previewImage = document.getElementById("previewImage");
+    var sendPreviewButton = document.getElementById("sendPreviewButton");
+    var cancelPreviewButton = document.getElementById("cancelPreviewButton");
+
+    modal.style.display = "block";
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
+        video.srcObject = stream;
+        video.play();
+
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = function (event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
+
+        // Capture photo logic
+        captureButton.onclick = function () {
+            
+            var canvas = document.createElement("canvas");
+            var context = canvas.getContext("2d");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageUrl = canvas.toDataURL("image/png");
+            
+            var removecamvid=document.getElementById("cameraVideo")
+            removecamvid.style.display="none"
+
+            
+            
+           /* var remPicBut=document.getElementById("CaptureButton")
+            remPicBut.style.display="none"
+            var remVidBut=document.getElementById("recordButton")
+            remVidBut.style.display="none"*/
+            var remModel=document.getElementById("cameraModal")
+            remModel.style.display="none"
+            previewVideo.style.display = "none"; // Hide video preview
+            var addModel=document.getElementById("previewModal")
+            addModel.style.display="block"
+            previewImage.src = imageUrl;
+            previewImage.style.display = "block";
+
+            
+            
+
+            // Show buttons for send/cancel
+            sendPreviewButton.onclick = function () {
+                var chatMessages = document.getElementById("chatMessages");
+                var messageElement = document.createElement("div");
+                messageElement.classList.add("message", "sent");
+                var messageContent = document.createElement("div");
+                messageContent.classList.add("message-content");
+                var imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+                imgElement.style.width = "100%";
+                imgElement.style.height = "auto";
+                messageContent.appendChild(imgElement);
+                messageElement.appendChild(messageContent);
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                previewModal.style.display = "none";
+                modal.style.display = "none";
+                video.srcObject.getTracks().forEach(track => track.stop());
+                window.history.back(); 
+                removecamvid.style.display="block"//reset cameraVideo
+            };
+
+            cancelPreviewButton.onclick = function () {
+                previewModal.style.display = "none";
+                modal.style.display = "none";
+                video.srcObject.getTracks().forEach(track => track.stop());
+                removecamvid.style.display="block"//reset cameraVideo
+            };
+        };
+
+        // Video recording logic
+        recordButton.onclick = function () {
+            mediaRecorder.start();
+            recordButton.style.display = "none";
+            stopButton.style.display = "inline-block";
+
+            //remove cature a pic text
+            var remPicBut=document.getElementById("captureButton")
+            remPicBut.style.display="none"
+
+            
+        };
+
+        stopButton.onclick = function () {
+            mediaRecorder.stop();
+            stopButton.style.display = "none";
+
+            var removecamvid=document.getElementById("cameraVideo")
+            removecamvid.style.display="none"
+        };
+
+        mediaRecorder.onstop = function () {
+            var blob = new Blob(recordedChunks, { type: "video/webm" });
+            var url = URL.createObjectURL(blob);
+
+            previewVideo.src = url;
+            previewVideo.style.display = "block"; // Show video preview
+            previewImage.style.display = "none"; // Hide image preview
+
+            var remModel=document.getElementById("cameraModal")
+            remModel.style.display="none"
+            previewImage.style.display = "none"; // Hide image preview
+            var addModel=document.getElementById("previewModal")
+            addModel.style.display="block"
+
+            
+
+            // Show buttons for send/cancel
+            sendPreviewButton.onclick = function () {
+                var chatMessages = document.getElementById("chatMessages");
+                var messageElement = document.createElement("div");
+                messageElement.classList.add("message", "sent");
+                var messageContent = document.createElement("div");
+                messageContent.classList.add("message-content");
+                var videoElement = document.createElement("video");
+                videoElement.src = url;
+                videoElement.controls = true;
+                videoElement.style.width = "100%";
+                videoElement.style.height = "auto";
+                messageContent.appendChild(videoElement);
+                messageElement.appendChild(messageContent);
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                previewModal.style.display = "none";
+                modal.style.display = "none";
+                video.srcObject.getTracks().forEach(track => track.stop());
+                recordedChunks = [];
+                window.history.back(); 
+                var removecamvid=document.getElementById("cameraVideo")
+                removecamvid.style.display="block"//reset cameraVideo
+               
+            };
+
+            cancelPreviewButton.onclick = function () {
+                previewModal.style.display = "none";
+                modal.style.display = "none";
+                video.srcObject.getTracks().forEach(track => track.stop());
+                recordedChunks = [];
+                var removecamvid=document.getElementById("cameraVideo")
+                removecamvid.style.display="block"//reset cameraVideo
+            };
+            var remPicBut=document.getElementById("captureButton")
+            remPicBut.style.display="inline"//reset captue a pic button
+            var recBut=document.getElementById("recordButton")
+            recBut.style.display="inline"//reset captue a rec button
+            
+        };
+    }).catch(function (error) {
+        console.error("Error accessing camera: ", error);
+    });
+}
+{%endblock script%}
+   
+    {%block content%}
+    <div class="content">
+        <div class="chat-list">
+            <h2>Chats</h2>
+            {%for i in list_of_chats%}
+            <div class="chat-item" onclick="openChat('{{i}}')">
+                <img alt="User Profile" src="https://via.placeholder.com/40"/>
+                <div class="chat-info">
+                    <div class="chat-name" id="chat-name">{{i}}</div>
+                    <div class="chat-last-message">Last message preview...</div>
+                </div>
+            </div>
+            {%endfor%}
+            <!--<div class="chat-item">
+                <img alt="User Profile" src="https://via.placeholder.com/40"/>
+                <div class="chat-info">
+                    <div class="chat-name">User Name 2</div>
+                    <div class="chat-last-message">Last message preview...</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <img alt="User Profile" src="https://via.placeholder.com/40"/>
+                <div class="chat-info">
+                    <div class="chat-name">User Name 3</div>
+                    <div class="chat-last-message">Last message preview...</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <img alt="User Profile" src="https://via.placeholder.com/40"/>
+                <div class="chat-info">
+                    <div class="chat-name">User Name 4</div>
+                    <div class="chat-last-message">Last message preview...</div>
+                </div>
+            </div>-->
+        </div>
+        <div class="chat-window">
+            <div class="chat-header">
+                <img alt="User Profile" src="https://via.placeholder.com/40"/>
+                <div class="chat-name" id="friendName">User Name 1</div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="message received">
+                    <div class="message-content">Hello! How are you?</div>
+                </div>
+                <div class="message sent">
+                    <div class="message-content">I'm good, thank you! How about you?</div>
+                </div>
+                <div class="message received">
+                    <div class="message-content">I'm doing well, thanks for asking.</div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <label class="file-label" for="fileInput">
+                    <i class="fas fa-paperclip"></i>
+                </label>
+                <input class="file-input" id="fileInput" onchange="sendFile(event)" type="file"/>
+                <button onclick="openCamera()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input id="chatInput" placeholder="Type a message..." type="text"/>
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                <button onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="cameraModal">
+        <div class="modal-content" >
+            <!-- Add this inside the modal-content -->
+            <video id="cameraVideo" autoplay playsinline></video>
+            <!-- For previewing the captured image -->
+          <!--  <img id="previewImage" style="width: 100%; display: none;" />
+            <video id="previewVideo" controls style="width: 100%; display: none;"></video>-->
+            <button id="captureButton" >Capture a Pic</button>
+            <button id="recordButton">Record Video</button>
+            <button id="stopButton" style="display: none;">Stop Recording</button>
+
+            
+        </div>
+    </div>
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <img id="previewImage" style="display: none; width: 100%;"/>
+            <video id="previewVideo" controls style="display: none; width: 100%;"></video>
+            <button id="sendPreviewButton">Send</button>
+            <button id="cancelPreviewButton">Cancel</button>
+        </div>
+        
+    </div>
+    
+    <!--<div class="modal" id="cameraModal">
+        <div class="modal-content">
+            <video id="cameraVideo" autoplay playsinline></video>
+            <button id="stopButton">Stop Recording</button>
+        </div>
+    </div>
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <video id="previewVideo" controls></video>
+            <button id="sendPreviewButton">Send Video</button>
+            <button id="cancelPreviewButton">Cancel</button>
+        </div>
+    </div>-->
+    <script>
+    var chatInput=document.getElementById("chatInput");
+        chatInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+                event.preventDefault(); // Prevent the default action (like form submission)
+            }
+        });
+    </script>
+    {%endblock content%}
+</body>
+</html>

@@ -1,0 +1,207 @@
+{%extends "C:\Users\Rohith Endoori\majorprojectvenv\mjpro\main\templates\home.html" %}
+
+{%block contentstyle%}
+
+.content {
+    margin-left: 60px;
+    padding: 20px;
+    background-color: #4f7c7b;
+    height: calc(100vh - 50px);
+    display: flex;
+}
+.left-container, .right-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 10px;
+}
+.left-container {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.right-container {
+    flex: 1.2;
+}
+.task-list {
+    list-style-type: none;
+    padding: 0;
+}
+.task-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+.graph {
+    width: 100%;
+    height: 400px;
+}
+{%endblock contentstyle%}
+
+{%block script%}
+
+
+{%endblock script%}
+
+{% block content %}
+
+<div class="content" >
+    <div class="left-container" style="margin-top: 4%;">
+        <h2>Graph</h2>
+        <div id="myDiv"></div>
+        <canvas id="usageGraph" class="graph"></canvas>
+    </div>
+    <div class="right-container" style="margin-top: 4%;">
+        <h2>Tasks</h2>
+        <ul class="task-list">
+            <li>Task 1</li>
+            <li>Task 2</li>
+            <li>Task 3</li>
+            <li>Task 4</li>
+            <li>Task 5</li>
+        </ul>
+    </div>
+</div>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!--<script>
+    // Initialize empty data arrays
+    let timeData = [];
+        let valueData = [];
+
+        // Create the initial plot
+        const trace = {
+            x: timeData,
+            y: valueData,
+            mode: 'lines+markers',
+            type: 'scatter',
+            name: 'Real-Time Data',
+            line: { color: 'rgba(75, 192, 192, 1)' }
+        };
+
+        const layout = {
+            title: 'Real-Time Data with Date and Time',
+            xaxis: {
+                title: 'Date and Time',
+                type: 'date'
+            },
+            yaxis: {
+                title: 'Value'
+            }
+        };
+
+        Plotly.newPlot('myDiv', [trace], layout);
+
+        const startTime = new Date(); // Get the current date and time
+        console.log(startTime);
+        const interval = setInterval(() => {
+            // Get the current time
+            const currentTime = new Date();
+            console.log(currentTime);
+            // Simulate new data point
+            const newValue = Math.random() * 20; // Random value for demonstration
+
+            // Add new data point with both date and time
+            timeData.push(currentTime); // Push the current time
+            valueData.push(newValue); // Push the new value
+
+            // Update the plot
+            Plotly.update('myDiv', { x: [timeData], y: [valueData] });
+
+            // Stop updating after 60 seconds
+            if ((currentTime - startTime) / 1000 > 60) {
+                clearInterval(interval);
+            }
+        }, 1000); // Update every second
+</script>-->
+<script>
+    let timeData = [];
+    let valueData = [];
+    let dots=[];
+    // Example dataset for markers (replace with your actual data)
+   /* const markerData = [
+        { time: '2023-10-01T12:00:00Z', count: 5 },
+        { time: '2023-10-01T12:01:00Z', count: 10 },
+        { time: '2023-10-01T12:02:00Z', count: 15 },
+        // Add more activities as needed
+    ];*/
+    
+    // Create the initial plot
+    const trace = {
+        x: timeData,
+        y: valueData,
+        mode: 'lines+markers',
+        type: 'scatter',
+        name: 'Real-Time Data',
+        line: { color: 'rgba(75, 192, 192, 1)' }
+    };
+
+    const layout = {
+        title: 'Real-Time Data with Date and Time',
+        xaxis: {
+            title: 'Date and Time',
+            type: 'date'
+        },
+        yaxis: {
+            title: 'Value'
+        }
+    };
+    let valueDat={{act_inses_c}};
+    let i=0;
+    //dots={{act_inses_a}};
+    Plotly.newPlot('myDiv', [trace], layout);
+
+    const li=[];
+        JSON.parse('{{time|safe}}').forEach(element => {
+            li.push(new Date(element));
+            
+        });
+    const l=JSON.parse('{{act_inses_a|safe}}');
+    console.log(li);
+
+    const startTime =new Date(li[2]);//new Date("{{reg_time}}"); // Get the current date and timen
+    console.log(startTime);
+    const interval = setInterval(() => {
+        // Get the current time
+        const currentTime = new Date(startTime.setSeconds(startTime.getSeconds()+1));
+        // Simulate new data point
+        //const newValue = Math.random() * 20; // Random value for demonstration
+        const markerIndices = li.map((time, index) => time.getTime() === currentTime.getTime() ? index : -1).filter(index => index !== -1);
+        // Add new data point with both date and time
+        timeData.push(currentTime); // Push the current time
+        console.log(currentTime);
+        valueData.push(valueDat[i])
+
+        // Update the plot
+        Plotly.update('myDiv', { x: [timeData], y: [valueData] });
+
+        // Add markers from the markerData dataset
+        //const markerTimes = markerData.map(activity => new Date(activity.time));
+        //const markerCounts = markerData.map(activity => activity.count);
+
+        // Add the marker trace
+       
+        if (markerIndices.length > 0) {
+        const markerTrace = {
+            x: markerIndices.map(index => timeData[index]), // Get the corresponding time from timeData
+            y: markerIndices.map(index => l[index]), // Get the corresponding value from l
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Marker Data',
+            marker: { color: 'rgba(255, 0, 0, 1)', size: 10 } // Customize marker appearance
+        };
+    
+
+        // Update the plot with markers
+        
+
+            Plotly.addTraces('myDiv', markerTrace);
+    }
+
+        // Stop updating after 60 seconds
+        //if ((currentTime - startTime) / 1000 > 60) {
+        //    clearInterval(interval);
+        //}
+        i=i+1;
+    }); // Update every second
+</script>
+{%endblock content%}

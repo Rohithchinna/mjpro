@@ -1,0 +1,235 @@
+{%extends "home.html" %} {% load static %}
+{%block contentstyle%}
+        .content {
+            margin-left: 60px;
+            padding: 20px;
+            display: flex;
+        }
+        .title {
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            width: 100%;
+            
+        }
+        .main-content {
+            flex: 3;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .network-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .network-item {
+            background-color: #aaa;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 5px;
+        }
+        .network-item i {
+            font-size: 24px;
+        }
+        .network-item span {
+            flex: 1;
+            margin-left: 10px;
+            background-color: #888;
+            height: 10px;
+            border-radius: 5px;
+        }
+        .network-item .add-icon {
+            font-size: 18px;
+        }
+        .suggestions {
+            flex: 1;
+            background-color: #ccc;
+            padding: 10px;
+            margin-left: 10px;
+            border-radius: 5px;
+        }
+        .suggestions h2 {
+            font-size: 18px;
+            margin: 0 0 10px 0;
+        }
+        .suggestion-item {
+            background-color: #aaa;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .suggestion-item i {
+            font-size: 24px;
+        }
+        .suggestion-item span {
+            flex: 1;
+            margin-left: 10px;
+            background-color: #888;
+            height: 10px;
+            border-radius: 5px;
+        }
+        .suggestion-item .add-icon {
+            font-size: 18px;
+        }
+        
+
+
+
+    {%endblock contentstyle%}
+
+    {%block script%}/*
+function ConnectWebSoc(receiver_email){
+    //const socket = new WebSocket(`ws://127.0.0.1:8000/ws/main/networks/${receiver_email}/`);
+    const socket = localStorage.getItem('myConstant');
+    socket.onclose = function(event) {
+        console.log("WebSocket is closed now.");
+    };
+    socket.onopen = function(event) {
+        console.log("WebSocket is open now.");
+        const messageData = {
+            receiver_email: receiver_email, 
+            message: "wants to add you to the network",
+            type:"add_friend"
+        };
+    
+        // Send the message data to the server
+        socket.send(JSON.stringify(messageData));
+    };
+    socket.onerror = function(error) {
+        console.error("WebSocket error observed:", error);
+    };
+    
+    socket.onmessage = function(event) {
+      console.log("hello");
+    const data = JSON.parse(event.data);
+    console.log(data.type);
+    //  Here you can add logic to prepend the new notification to the list
+        const notificationsColumn = document.querySelector('.notifications-column');
+        const newNotification = document.createElement('div');
+        newNotification.className = 'notifications-item';
+        newNotification.innerHTML = `
+        <i class="fas fa-user-circle"></i>
+        <span>${data.message}</span>
+        <i class="fas fa-plus add-icon"></i>`;
+   }
+}
+function ConnectWebSoc(receiver_email) {
+    // Check if the WebSocket is available globally
+    if (window.socket && window.socket.readyState === WebSocket.OPEN) {
+        console.log("hi")
+        const messageData = {
+            receiver_email: receiver_email,
+            message: "wants to add you to the network",
+            type: "add_friend"
+        };
+
+        // Send the message data to the server via the WebSocket
+        window.socket.send(JSON.stringify(messageData));
+    } else {
+        console.error("WebSocket is not open or available.");
+    }
+}*/
+{%endblock script%}
+
+    {%block content%}
+    <div class="content">
+        <div class="main-content" style="margin-top: 4%;">
+            <div class="title">Networks</div>
+            <div class="network-column">
+                {%for i in netw%}
+                <div class="network-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{i}}</span>
+                    <i class="fas fa-plus add-icon"></i>
+                </div>
+                {%endfor%}
+                
+            </div>
+            <div class="network-column">
+                {%for i in netw2%}
+                <div class="network-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>{{i}}</span>
+                    <i class="fas fa-plus add-icon"></i>
+                </div>
+                {%endfor%}
+                <script src="{% static 'not_server.js' %}"></script> <script>
+                   
+                    /*function ConnectWebSoc(userEmail){
+                    //const userEmail = "{{ user }}";
+                    connectWebSocket(userEmail);
+            
+                    //sendAddFriendRequest(userEmail);
+                    
+            
+                    /*document.addEventListener('DOMContentLoaded', function() {
+                        const suggestionsContainer = document.getElementById('suggestions-container');
+                        const suggestedUsers = JSON.parse(document.getElementById('suggested-users-data').textContent);
+            
+                        suggestedUsers.forEach(user => {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.className = 'suggestion-item';
+                            suggestionItem.innerHTML = `
+                                <i class="fas fa-user-circle"></i>
+                                <span>${user}</span>
+                                <i class="fas fa-plus add-icon"></i>
+                                <button onclick="sendAddFriendRequest('${user}')">Add</button>
+                            `;
+                            suggestionsContainer.appendChild(suggestionItem);
+                        });
+                    });
+                    
+                    socket.onopen = () => {
+        console.log("WebSocket connected.");
+        sendAddFriendRequest(userEmail);
+        
+    };
+                }
+                function sendAddFriendRequest(receiverEmail) {
+                        sendMessage(receiverEmail, "wants to add you to the network", "add_friend");
+                    }
+            
+                    function displayNotification(data) {
+                        // This page might not need to display all notifications, but it needs the function to exist.
+                        console.log("Notification received on Networks page (might not be displayed):", data);
+                    }*/
+                </script>
+            </div>
+        </div>
+        <div class="suggestions" style="margin-top: 4%;">
+            <h2>Suggestions</h2>
+            {%for i in suggestedusers%}
+            <div class="suggestion-item">
+                <i class="fas fa-user-circle" id='suggested-users-data'>{{i}}</i>
+                
+                <i class="fas fa-plus add-icon" ><a  href="{%url 'addfriend' username=i%}">Add</a></i>
+            </div>
+            {%endfor%}
+            <div class="suggestion-item">
+                <i class="fas fa-user-circle"></i>
+                <span></span>
+                <i class="fas fa-plus add-icon"></i>
+            </div>
+            <div class="suggestion-item">
+                <i class="fas fa-user-circle"></i>
+                <span></span>
+                <i class="fas fa-plus add-icon"></i>
+            </div>
+            <div class="suggestion-item">
+                <i class="fas fa-user-circle"></i>
+                <span></span>
+                <i class="fas fa-plus add-icon"></i>
+            </div>
+        </div>
+    </div>
+    {%endblock content%}

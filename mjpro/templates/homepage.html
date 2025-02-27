@@ -1,0 +1,67 @@
+<html>
+<head>
+    <title>ConnectingThePeers</title>
+    <style>
+        body {
+            background-color: #4A7A7A;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #FFFFFF;
+        }
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #000000;
+        }
+        .buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .buttons a {
+            background-color: #00FF7F;
+            border: none;
+            color: #000000;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 12px;
+            font-family: 'Arial', sans-serif;
+        }
+        .content {
+            text-align: center;
+            color: #E0E0E0;
+            font-size: 24px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .content p {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">ConnectingThePeers</div>
+    <div class="buttons">
+        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'login' %}">Log in</a>
+    </div>
+    <div class="content">
+        <p>Welcome to ConnectingThePeers</p>
+        <p>Connect with people</p>
+        <p>And develop your Skills</p>
+    </div>
+</body>
+</html>
