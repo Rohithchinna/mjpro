@@ -161,3 +161,7 @@ CACHES = {
 
 # settings.py
 LOGIN_URL = '/logsubmit/'  # URL to redirect to for login
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://web-production-3f81.up.railway.app',  # Add your Railway app URL
+]
