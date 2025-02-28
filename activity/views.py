@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from .models import *
 import json
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+@login_required
 def activity(request):
     act_inses=Activity.objects.filter(profile=request.user)
     act_inses=Activity.objects.filter(profile=request.user)

@@ -4,9 +4,10 @@ from django.core.cache import cache
 from main.models import Users
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
-current_user=cache.get('uservar')
+@login_required
 def chats(request):
     current_user=request.user.email
     list_of_chats=[]
@@ -24,6 +25,8 @@ def chats(request):
     print(list_of_chats)
     context['list_of_chats']=list_of_chats
     return render(request,"chats.html",context)
+
+@login_required
 def add_to_Messages(request):
     
     current_user=request.user.email
@@ -62,6 +65,7 @@ def add_to_Messages(request):
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
 
+@login_required
 def past_messages(request,receiver):
     #for past messages
     past_messages={}

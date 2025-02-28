@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from profiles.models import profiles
 
 # Create your views here.
+@login_required
 def addPosts(request):
     filters=myPosts.objects.filter(profile=profiles.objects.get(user_name=request.user)).order_by("-posted_at")
 
@@ -36,6 +37,8 @@ class UploadPost(CreateView,ListView):
         myPostsInst=myPosts(profile=profile,title=title,description=description,post=post,resource=resource)
         myPostsInst.save()
         return redirect(self.success_url)
+
+@login_required
 def addLike(request):
     if request.method == 'POST':
         post_id = request.POST.get('post_id')

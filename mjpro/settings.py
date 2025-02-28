@@ -150,14 +150,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.environ.get('REDIS_URL'),  # Use the appropriate Redis server URL
+        'LOCATION': 'redis://default:lkInmyUAhkHxlBsZxiYRzbstUinkwpND@redis-jhtl.railway.internal:6379',  # Use the appropriate Redis server URL
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }
     }
 }
-
-
+# redis local       'redis://127.0.0.1:6379',
+# redis railway     redis://default:lkInmyUAhkHxlBsZxiYRzbstUinkwpND@redis-jhtl.railway.internal:6379
 
 # settings.py
 LOGIN_URL = '/logsubmit/'  # URL to redirect to for login

@@ -14,17 +14,15 @@ from asgiref.sync import async_to_sync
 @login_required
 def notifications(request):
     current_user=cache.get('uservar')
-    if request.user:
-        notifications_list={'list':[],'user':request.user}
-        get_instance_current_user=Users.objects.get(email=request.user.email)
-        x=Notification.objects.filter(notif_to_user=get_instance_current_user)
-        for i in x:
-            if i.notif_content=="add_friend":
-                notifications_list['list'].insert(0,f'{i.notif_from_user} wants to add you to the Network')
-        print(notifications_list)
-        return render(request,"notifications.html",notifications_list)
-    else:
-        return render(request,"home.html")
+    notifications_list={'list':[],'user':request.user}
+    get_instance_current_user=Users.objects.get(email=request.user.email)
+    x=Notification.objects.filter(notif_to_user=get_instance_current_user)
+    for i in x:
+        if i.notif_content=="add_friend":
+            notifications_list['list'].insert(0,f'{i.notif_from_user} wants to add you to the Network')
+    print(notifications_list)
+    return render(request,"notifications.html",notifications_list)
+    
 
 
 def add_to_notifications(sender,receiver,type):

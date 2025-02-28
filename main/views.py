@@ -13,6 +13,7 @@ from profiles.models import *
 from datetime import datetime
 from addPosts.models import myPosts
 # Create your views here.
+@login_required
 def home(request):
     ss=myPosts.objects.all()
     context={'ss':ss}

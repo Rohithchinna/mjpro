@@ -360,20 +360,20 @@
        </div>
        <div class="post-time">
         <t>{{i.profile.user_name}}</t>
-        <t style="padding-left:  200px;">{{i.posted_at}}</t>
+        <small style="padding-left:  200px;">{{i.posted_at}}</small>
        </div>
       </div>
      </div>
      {%if i.post %}
-        <img   src="{{i.post.url}}" style="width: 500px; height: 200px; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
+        <img   src="{{i.post.url}}" style=" height: 200; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
         {%else%}
-        <img   src="https://placehold.co/100x100" style="width: 500px; height: 200px; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
+        <img   src="https://placehold.co/100x100" style="height: 200; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
         {%endif%}
      <!--<img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
     -->
      
      
-     <div style="margin-top: 15px;height: 20px;">
+     <div style="margin-top: 15%;height: 20; display: inline;">
       <span class="spanstyle"  id="likeButton_{{forloop.counter}}" style="margin-left: 2px; margin-right: 5px; display: inline-block; cursor: pointer; " onclick="likefunction(this)" post_id="{{i.id}}"> <i class="fa fa-heart" style="color: red; margin-right: 2px; "></i> Likes</span>
        <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"> <i class="fa fa-comments" style="margin-left: 2px;" ></i > Comments</span>
        <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"><i class="fa fa-share" style="margin-left: 2px;" > </i> Share</span>
