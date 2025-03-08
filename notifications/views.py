@@ -29,17 +29,17 @@ def add_to_notifications(sender,receiver,type):
     print(sender,receiver,"hi")
     get_instance_sender=Users.objects.get(email=sender)
     get_instance_receiver=Users.objects.get(email=receiver)
-    x=Notification(notif_from_user=get_instance_sender,is_seen=False,notif_content=type,notif_to_user=get_instance_receiver)
-    x.save()
+    #x=Notification(notif_from_user=get_instance_sender,is_seen=False,notif_content=type,notif_to_user=get_instance_receiver)
+    #x.save()
     channel_layer = get_channel_layer()
     dic={'type':type,'sender':sender}
     print("in add_to not")
     #NotificationConsumer.send_notification(self=None,text_data=dic)
-    print(async_to_sync(channel_layer.group_send)(
-        f"user_{str(receiver).replace("@","_")}",  # Group name
+    async_to_sync(channel_layer.group_send)(
+        f"user_{str(get_instance_receiver.email).replace("@","_")}",  # Group name
         {
             'type': type,
             'message': "wants to add to the Network",
             'receiver_email':receiver
         }
-    ))
+    )

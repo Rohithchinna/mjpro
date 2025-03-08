@@ -30,7 +30,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         
         #self.disconnect()
     #receive from client
-    async def receive(self, text_data):
+    '''async def receive(self, text_data):
         print("in receive")
         text_data=json.loads(text_data)
         message = text_data['message']
@@ -52,7 +52,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         print(self.channel_layer,self.group_name)
         
         print("in receive")
-        #await self.send_notification(json.dumps(text_data))
+        #await self.send_notification(json.dumps(text_data))'''
     async def send_notification(self, event):
         print("in send_notification")
         #type = event['type']
@@ -70,7 +70,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             'receiver_email':receiver_email,
             'message':message
         }))
-    async def again_send(self,text_data):
+    '''async def again_send(self,text_data):
         print("in again_send")
         await self.channel_layer.group_send(
             self.group_name,
@@ -78,6 +78,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 'type': 'send_notification',
                 'message':json.loads(text_data)
             }
-        )
+        )'''
         
     

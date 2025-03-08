@@ -87,10 +87,10 @@
 
     {%endblock contentstyle%}
 
-    {%block script%}/*
+    {%block script%}
 function ConnectWebSoc(receiver_email){
-    //const socket = new WebSocket(`ws://127.0.0.1:8000/ws/main/networks/${receiver_email}/`);
-    const socket = localStorage.getItem('myConstant');
+    const socket = new WebSocket(`ws://127.0.0.1:8000/ws/main/networks/${receiver_email}/`);
+    //const socket = localStorage.getItem('myConstant');
     socket.onclose = function(event) {
         console.log("WebSocket is closed now.");
     };
@@ -122,7 +122,7 @@ function ConnectWebSoc(receiver_email){
         <span>${data.message}</span>
         <i class="fas fa-plus add-icon"></i>`;
    }
-}
+}/*
 function ConnectWebSoc(receiver_email) {
     // Check if the WebSocket is available globally
     if (window.socket && window.socket.readyState === WebSocket.OPEN) {

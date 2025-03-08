@@ -51,7 +51,7 @@ def addLike(request):
         # Create a new like
         like,created = likes.objects.get_or_create(post=post)
         like.liked_by.add(liked_by)
-        like.likes+=1
+        like.likes=like.liked_by.count()
         like.save()
 
         # Return a JSON response

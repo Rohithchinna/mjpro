@@ -7,6 +7,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
+    
    body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -136,6 +137,37 @@
             font-size: 14px;
         }
         {%block contentstyle %}
+        .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    align-content: end;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+    .modal{
+        padding: 2%;
+        display: none;
+    position: fixed;
+    z-index: 2;
+    left: 300;
+    top: 250;
+    width: 50%;
+    height: inherit;
+    scroll-behavior: auto;
+    background-color: rgba(255, 255, 247, 0.992);
+    
+    }
+    .modal img{
+        width: 80%;
+        max-height: 300px;
+    }
         .content {
             margin-left: 60px;
             padding: 20px;
@@ -225,6 +257,7 @@
 </script>
  </head>
  <body>
+    
     
   <div class="header">
    <div class="logo">
@@ -345,6 +378,8 @@
      <img alt="Post Image" height="200" src="https://storage.googleapis.com/a1aa/image/xc8UWorRSdZfIq9PKoM9pN3gyPzGSml37sdPRDAiyGCpBO6JA.jpg" width="300"/>
     </div>-->
     {%for i in ss%}
+    {%if not i.profile.user_name ==  request.user%}
+    
     <div class="post">
      <div class="post-header">
       <i >
@@ -365,7 +400,7 @@
       </div>
      </div>
      {%if i.post %}
-        <img   src="{{i.post.url}}" style=" height: 200; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
+        <img   src="{{i.post.url}}" style=" height: 200; "  ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))" oncontextmenu= "openModal('{{i.post.url}}','{{i.title}}','{{i.description}}')"/>
         {%else%}
         <img   src="https://placehold.co/100x100" style="height: 200; " ondblclick="likefunction(document.getElementById('likeButton_{{forloop.counter}}'))"/>
         {%endif%}
@@ -374,11 +409,12 @@
      
      
      <div style="margin-top: 15%;height: 20; display: inline;">
-      <span class="spanstyle"  id="likeButton_{{forloop.counter}}" style="margin-left: 2px; margin-right: 5px; display: inline-block; cursor: pointer; " onclick="likefunction(this)" post_id="{{i.id}}"> <i class="fa fa-heart" style="color: red; margin-right: 2px; "></i> Likes</span>
+      <span class="spanstyle"  id="likeButton_{{forloop.counter}}" style="margin-left: 2px; margin-right: 5px; display: inline-block; cursor: pointer; " onclick="likefunction(this)" post_id="{{i.id}}"> <i class="fa fa-heart" style="color: red; margin-right: 2px; "></i>{{i.likes.first.likes}} Likes</span>
        <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"> <i class="fa fa-comments" style="margin-left: 2px;" ></i > Comments</span>
        <span class="spanstyle" style="margin-left: 2px; margin-right: 5px;"><i class="fa fa-share" style="margin-left: 2px;" > </i> Share</span>
      </div>
     </div>
+    {%endif%}
     {%endfor%}
     <style>
         .spanstyle {
@@ -401,8 +437,19 @@
      </style>
     <script>
         //const likeButton = document.getElementById('likeButton');
+        function openModal(post,title,description){
+            event.preventDefault();
+            document.getElementById("modal").style.display="block";
+            const img=document.getElementById("modalimg");
+            img.src=post;
+            const tit=document.getElementById("modaltitle");
+            tit.innerHTML=title;
+            const desc=document.getElementById("modaldesc");
+            desc.innerHTML=description;
+        };
    
         function likefunction(element) {
+                document.getElementById('modal').style.display='none';
                element.classList.toggle('active'); // Toggle the 'active' class on click
                postId=element.getAttribute('post_id');
                console.log(postId);
@@ -416,6 +463,8 @@
                         },
                         success: function(response) {
                             console.log("liked");
+                            
+
                         },
                         error: function(xhr, status, error) {
                             
@@ -502,7 +551,7 @@
       </div>
      </div>
     </div>
-    {%for i in ss%}
+    {%for i in sug%}
     <div class="suggestion">
      <i >
         {%if i.profile_pic %}
@@ -514,7 +563,7 @@
      <div class="suggestion-info">
        
       <div class="suggestion-name">
-       {{i.user_name.username}}
+       {{i.username}}
       </div>
       <div class="suggestion-details">
        Details
@@ -536,6 +585,16 @@
     </div>
    </div>
   </div>
+  <div class="modal" id="modal">
+    <span class="close" id="closeEditModal" onclick="document.getElementById('modal').style.display='none'; ">
+        ×
+       </span>
+    <img src='' id="modalimg"/>
+
+    <span><h2>Title: <h3 id="modaltitle"></h3></h2></span>
+    <h2>Description</h2>
+    <p id="modaldesc"></p>
+</div>
   {%endblock content%}
  </body>
 </html>

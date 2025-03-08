@@ -150,7 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://default:lkInmyUAhkHxlBsZxiYRzbstUinkwpND@redis-jhtl.railway.internal:6379',  # Use the appropriate Redis server URL
+        'LOCATION': 'redis://127.0.0.1:6379',  # Use the appropriate Redis server URL
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
         }

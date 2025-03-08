@@ -8,6 +8,7 @@ import json
 from notifications.views import add_to_notifications
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from activity.models import *
 from profiles.models import *
 from datetime import datetime
@@ -15,8 +16,10 @@ from addPosts.models import myPosts
 # Create your views here.
 @login_required
 def home(request):
-    ss=myPosts.objects.all()
-    context={'ss':ss}
+    ss=myPosts.objects.prefetch_related('likes').all()
+    print(ss,request.user)
+    sug=User.objects.all()
+    context={'ss':ss,'sug':sug}
     return render(request,"home.html",context)
 @login_required
 def signout(request):
@@ -80,10 +83,10 @@ def networks(request):
 @login_required
 def addfriend(request,username):
     print("in addfriend")
-    z = cache.get('uservar')  # Assuming 'uservar' is stored in the cache
+    #z = cache.get('uservar')  # Assuming 'uservar' is stored in the cache
     print(username,request.user)
-    if z is None:
-        return render(request, "networks.html", {'error': 'User  not found in cache.'})
+    #if z is None:
+    #    return render(request, "networks.html", {'error': 'User  not found in cache.'})
     add_to_notifications(request.user,username,"add_friend")
     # Check if a Networks instance already exists for the current user
     '''try:
@@ -97,5 +100,6 @@ def addfriend(request,username):
         x.add_item(username)  # Now add the new friend'''
     print("in addfriend 2")
     return redirect('networks')
+    
 
 

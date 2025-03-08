@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.template import loader
 from django.http import HttpResponse
 from main.models import Users
@@ -63,7 +63,7 @@ def logsubmit(request):
 
       try:
             # Retrieve the user by email
-            user = User.objects.get(email=email)
+            user = get_object_or_404(User,email=email)
             print(user)
 
             # Compare the submitted password with the stored password
